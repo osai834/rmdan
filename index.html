@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Kareem</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1 class="text-3xl mb-4">رمضان كريم 🌙</h1>
+
+    <label class="mb-2">أدخل اسمك:</label>
+
+    <input 
+        type="text" 
+        id="userName" 
+        class="bg-white text-black rounded-lg border-2 border-gray-300 p-2 mb-3"
+    >
+
+    <button 
+        id="btn" 
+        class="bg-amber-900 hover:bg-yellow-600 p-2 m-2 text-white font-bold rounded"
+    >
+        تهنئة
+    </button>
+
+    <div id="message" class="hidden bg-amber-700 p-4 rounded-lg mt-4">
+        <h3>رمضان كريم يا:</h3>
+        <span id="displayName" class="font-bold text-xl"></span>
+        <p class="mt-2">كل عام وأنتم بخير وصحة وعافية</p>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="ramadan.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let btn = document.getElementById("btn");
+        let music = document.getElementById("bgMusic");
+
+        btn.onclick = function () {
+            let userName = document.getElementById("userName").value;
+            let displayName = document.getElementById("displayName");
+            let message = document.getElementById("message");
+
+            if (userName.trim() !== "") {
+                displayName.innerHTML = userName;
+                message.classList.remove("hidden");
+                music.play();
+            }
+        };
+    </script>
+
+</body>
+</html>
