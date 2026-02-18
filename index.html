@@ -1,57 +1,270 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan Kareem</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramadan Kareem</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Tahoma,Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+color:white;
+}
+
+.stars{
+position:absolute;
+width:100%;
+height:100%;
+background:url("https://i.imgur.com/9QZ7Z6B.png");
+animation:moveStars 80s linear infinite;
+opacity:.4;
+}
+
+@keyframes moveStars{
+from{background-position:0 0;}
+to{background-position:1500px 1500px;}
+}
+
+.card{
+background:rgba(0,0,0,.6);
+backdrop-filter:blur(10px);
+padding:30px;
+border-radius:20px;
+text-align:center;
+width:360px;
+box-shadow:0 0 30px rgba(255,215,0,.4);
+transition:.3s;
+}
+
+h1{
+font-size:28px;
+text-shadow:0 0 10px gold,0 0 20px gold;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+}
+
+button{
+margin-top:12px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.primary{
+background:goldenrod;
+color:black;
+}
+
+.primary:hover{background:orange;}
+
+.whatsapp{
+background:#25D366;
+color:white;
+}
+
+.whatsapp:hover{background:#1ebe5d;}
+
+.message{
+margin-top:15px;
+opacity:0;
+transform:scale(.8);
+transition:.5s;
+}
+
+.show{
+opacity:1;
+transform:scale(1);
+}
+
+.avatar{
+width:80px;
+height:80px;
+border-radius:50%;
+margin:10px auto;
+display:block;
+}
+
+.error{
+color:red;
+margin-top:10px;
+display:none;
+}
+
+.countdown{
+margin-top:10px;
+font-size:14px;
+}
+
+.mute{
+position:absolute;
+top:10px;
+left:10px;
+background:gold;
+border:none;
+padding:5px 10px;
+border-radius:8px;
+cursor:pointer;
+}
+</style>
 </head>
+
 <body>
 
-    <h1 class="text-3xl mb-4">رمضان كريم 🌙</h1>
+<div class="stars"></div>
 
-    <label class="mb-2">أدخل اسمك:</label>
+<button class="mute" onclick="toggleMusic()">🔊</button>
 
-    <input 
-        type="text" 
-        id="userName" 
-        class="bg-white text-black rounded-lg border-2 border-gray-300 p-2 mb-3"
-    >
+<div class="card" id="card">
+<h1>رمضان كريم 🌙</h1>
 
-    <button 
-        id="btn" 
-        class="bg-amber-900 hover:bg-yellow-600 p-2 m-2 text-white font-bold rounded"
-    >
-        تهنئة
-    </button>
+<input type="text" id="userName" placeholder="أدخل اسمك">
 
-    <div id="message" class="hidden bg-amber-700 p-4 rounded-lg mt-4">
-        <h3>رمضان كريم يا:</h3>
-        <span id="displayName" class="font-bold text-xl"></span>
-        <p class="mt-2">كل عام وأنتم بخير وصحة وعافية</p>
-    </div>
+<select id="type">
+<option value="friends">للأصدقاء</option>
+<option value="family">للعائلة</option>
+<option value="formal">رسمية</option>
+</select>
 
-    <audio id="bgMusic" loop>
-        <source src="ramadan.mp3" type="audio/mpeg">
-    </audio>
+<select id="color">
+<option value="#000000">داكن</option>
+<option value="#1e3a8a">أزرق</option>
+<option value="#7c2d12">بني</option>
+<option value="#14532d">أخضر</option>
+</select>
 
-    <script>
-        let btn = document.getElementById("btn");
-        let music = document.getElementById("bgMusic");
+<button class="primary" onclick="greet()">تهنئة</button>
+<button class="whatsapp" onclick="sendWhatsApp()">مشاركة عبر واتساب</button>
 
-        btn.onclick = function () {
-            let userName = document.getElementById("userName").value;
-            let displayName = document.getElementById("displayName");
-            let message = document.getElementById("message");
+<div class="error" id="error">يرجى إدخال اسم صحيح بدون أرقام</div>
 
-            if (userName.trim() !== "") {
-                displayName.innerHTML = userName;
-                message.classList.remove("hidden");
-                music.play();
-            }
-        };
-    </script>
+<div class="message" id="message">
+<img src="https://i.imgur.com/4M34hi2.png" class="avatar">
+<h3 id="text"></h3>
+</div>
+
+<div class="countdown" id="countdown"></div>
+
+</div>
+
+<audio id="bgMusic" autoplay loop>
+<source src="ramadan.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let music=document.getElementById("bgMusic");
+music.volume=.5;
+
+function toggleMusic(){
+if(music.paused){music.play();}else{music.pause();}
+}
+
+function greet(){
+
+let name=document.getElementById("userName").value.trim();
+let type=document.getElementById("type").value;
+let color=document.getElementById("color").value;
+let error=document.getElementById("error");
+let message=document.getElementById("message");
+let text=document.getElementById("text");
+let card=document.getElementById("card");
+
+if(name==="" || /\d/.test(name)){
+error.style.display="block";
+return;
+}
+
+error.style.display="none";
+card.style.background=color;
+
+let greeting="";
+
+if(type==="friends"){
+greeting="رمضان كريم يا "+name+" 🌟 صديقي الغالي";
+}
+else if(type==="family"){
+greeting="كل عام وأنت بخير يا "+name+" ❤️ من العائلة";
+}
+else{
+greeting="يسرني أن أهنئكم بحلول شهر رمضان المبارك يا "+name;
+}
+
+text.innerHTML=greeting;
+message.classList.add("show");
+
+confetti({
+particleCount:150,
+spread:70,
+origin:{y:0.6}
+});
+}
+
+function sendWhatsApp(){
+
+let name=document.getElementById("userName").value.trim();
+
+if(name==="" || /\d/.test(name)){
+alert("أدخل اسم صحيح أولاً");
+return;
+}
+
+let siteLink=window.location.origin+window.location.pathname+"?name="+encodeURIComponent(name);
+
+let text="🌙 رمضان كريم\n\n"
++"تهنئة خاصة إلى: "+name+"\n\n"
++"اضغط لمشاهدة التهنئة:\n"+siteLink;
+
+let url="https://api.whatsapp.com/send?text="+encodeURIComponent(text);
+
+window.open(url,"_blank");
+}
+
+window.onload=function(){
+let params=new URLSearchParams(window.location.search);
+let name=params.get("name");
+if(name){
+document.getElementById("userName").value=name;
+greet();
+}
+}
+
+function countdownRamadan(){
+let target=new Date("March 1, 2026 00:00:00").getTime();
+let now=new Date().getTime();
+let diff=target-now;
+
+if(diff<0){
+document.getElementById("countdown").innerHTML="رمضان مبارك 🌙";
+return;
+}
+
+let days=Math.floor(diff/(1000*60*60*24));
+let hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+let minutes=Math.floor((diff%(1000*60*60))/(1000*60));
+
+document.getElementById("countdown").innerHTML=
+"متبقي على رمضان: "+days+" يوم "+hours+" ساعة "+minutes+" دقيقة";
+}
+
+setInterval(countdownRamadan,1000);
+</script>
 
 </body>
 </html>
